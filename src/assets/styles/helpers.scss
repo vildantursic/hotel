@@ -1,0 +1,11 @@
+.flex-it {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.rounded {
+    border-radius: 50%;
+    overflow: hidden;
+    border: solid 1px black;
+}
