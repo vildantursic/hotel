@@ -19,21 +19,28 @@
             ])
         },
         methods: {
-            get(route) {
-                return axios.get(`http://localhost:8000/${route}`, {
-                    headers: {
-                        'Authorization': `Token ${store.state.user.token}`
+            headers() {
+                if (store.state.user.token) {
+                    return {
+                        headers: {
+                            'Authorization': `Token ${store.state.user.token}`
+                        }
                     }
-                })
+                } else {
+                    return {}
+                }
+            },
+            get(route) {
+                return axios.get(`http://localhost:8000/${route}`, this.headers())
             },
             post(route, data) {
-                return axios.post(`http://localhost:8000/${route}`, data)
+                return axios.post(`http://localhost:8000/${route}`, data, this.headers())
             },
             put(route, data) {
-                return axios.put(`http://localhost:8000/${route}`, data)
+                return axios.put(`http://localhost:8000/${route}`, data, this.headers())
             },
             delete(route) {
-                return axios.delete(`http://localhost:8000/${route}`)
+                return axios.delete(`http://localhost:8000/${route}`, this.headers())
             }
         }
     }

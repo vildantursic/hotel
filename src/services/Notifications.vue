@@ -6,7 +6,7 @@
             Notification
         },
         methods: {
-            emit(title, message, type) {
+            emit(title = 'Info', message = '...', type = 'info') {
                 Notification({
                     title,
                     message,

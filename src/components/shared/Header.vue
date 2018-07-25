@@ -4,12 +4,13 @@
             <div>
                 <router-link v-show="isLoggedIn" to="/">Dashboard</router-link>
                 <router-link v-show="isLoggedIn" to="/favourites">Favourites</router-link>
-                <a v-show="isLoggedIn" @click="onLogout">Logout</a>
             </div>
 
             <div>
                 <router-link v-show="!isLoggedIn" to="/login">Login</router-link>
                 <router-link v-show="!isLoggedIn" to="/register">Register</router-link>
+                <router-link v-show="isLoggedIn" to="/create">{{$store.state.user.email}}</router-link>
+                <a v-show="isLoggedIn" @click="onLogout">Logout</a>
             </div>
         </nav>
     </header>

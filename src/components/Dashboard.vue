@@ -1,12 +1,12 @@
 <template>
-    <div>
+    <div class="main">
       <h1>Dashboard</h1>
-      <el-button type="primary" @click="getHotes()">{{loading ? 'laoding ...' : 'Get Hotels'}}</el-button>
+      <el-button type="primary" @click="getHotels()" v-loading.fullscreen.lock="loading">{{loading ? 'laoding ...' : 'Get Hotels'}}</el-button>
       <div>
         <HotelCard v-for="(hotel, i) in hotels" :key="i"
             :hotel="hotel"
             @onGetReviews="getReviews($event)"
-            @onFavouriteClick="setFavourite($event)"/>
+            @onSetFavourite="setFavourite($event)"/>
       </div>
     </div>
 </template>
@@ -28,6 +28,9 @@ export default {
       loading: false
     };
   },
+  created() {
+	this.getHotels()
+  },
   computed: {
     hotels() {
       return this.$store.state.hotels;
@@ -37,7 +40,7 @@ export default {
     hotels() {}
   },
   methods: {
-    getHotes() {
+    getHotels() {
       this.loading = true;
       Service.methods.get("hotel_api").then(response => {
         this.$store.commit("setHotels", response.data);
@@ -56,7 +59,10 @@ export default {
     setFavourite(data) {
       Service.methods
         .post("favorites/add_remove", data)
-        .then(() => this.getHotels());
+		.then((response) => {
+			Notifications.methods.emit('Success', response.data.Message , 'success')
+			this.getHotels()
+		});
     }
   }
 };

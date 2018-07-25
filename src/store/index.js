@@ -20,7 +20,20 @@ export const store = new Vuex.Store({
                 return hotel
             })
         },
+        setFavouriteHotels(state, payload) {
+            state.hotels = payload.map(hotel => {
+                hotel['reviews'] = []
+                return hotel
+            }).filter(hotel => {
+                if (hotel.user) {
+                    return hotel.user.includes(state.user.user_id) ? hotel : null
+                } else {
+                    return null
+                }
+            })
+        },
         setHotel(state, payload) {
+            payload['reviews'] = []
             state.hotel = payload
         },
         setReviews(state, payload) {

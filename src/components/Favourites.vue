@@ -1,12 +1,12 @@
 <template>
-    <div>
+    <div class="main">
         <h1>Favourites</h1>
-        <el-button type="primary" @click="getHotes()">{{loading ? 'laoding ...' : 'Get Fav Hotels'}}</el-button>
+        <el-button type="primary" @click="getHotels()" v-loading.fullscreen.lock="loading">{{loading ? 'laoding ...' : 'Get Fav Hotels'}}</el-button>
         <div>
             <HotelCard v-for="(hotel, i) in hotels" :key="i"
                 :hotel="hotel"
                 @onGetReviews="getReviews($event)"
-                @onFavouriteClick="setFavourite($event)"/>
+                @onSetFavourite="setFavourite($event)"/>
         </div>
     </div>
 </template>
@@ -26,6 +26,9 @@ export default {
       loading: false
     };
   },
+  created() {
+    this.getHotels();
+  },
   computed: {
     hotels() {
       return this.$store.state.hotels;
@@ -35,10 +38,10 @@ export default {
     hotels() {}
   },
   methods: {
-    getHotes() {
+    getHotels() {
       this.loading = true;
       Service.methods.get("favorites").then(response => {
-        this.$store.commit("setHotels", response.data);
+        this.$store.commit("setFavouriteHotels", response.data);
         this.loading = false;
       });
     },

@@ -1,8 +1,7 @@
 <template>
-    <div>
+    <div class="main">
       <div v-if="hotel"> 
-        <HotelCard :hotel="hotel"
-                   :reviews="hotel"
+        <HotelCard :hotel="hotel" :details="true"
                    @onGetReviews="getReviews($event)"/>
       </div>
     </div>
@@ -27,9 +26,6 @@ export default {
   },
   computed: {
     hotel() {
-      return this.$store.state.hotel
-    },
-    reviews() {
       return this.$store.state.hotel
     }
   },

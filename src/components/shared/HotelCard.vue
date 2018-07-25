@@ -6,14 +6,36 @@
             </div>
             <div class="content">
                 <div class="header">
-                    <router-link :to="`/hotel/${hotel.id}`">
-                        <h2>{{hotel.name}} <small>{{hotel.city}} - {{hotel.country}}</small></h2>
-                    </router-link>
-                    <i v-if="checkIfFav" class="el-icon-star-on"></i>
-                    <i v-if="!checkIfFav" class="el-icon-star-off"></i>
+                    <div class="flex-it">
+                        <a @click="openInNewWin(`/#/hotel/${hotel.id}`)">
+                            <h2>{{hotel.name}} <small>{{hotel.city}} - {{hotel.country}}</small></h2>
+                        </a>
+                        <i style="margin: 20px; font-size: 25px" :class="checkIfFavourite(hotel.user) ? 'el-icon-star-on' : 'el-icon-star-off'" @click="setFavourite(hotel.id, hotel.user)"></i>
+                    </div>
                     <el-rate v-model="hotel.stars" disabled></el-rate>
                 </div>
                 <div class="description">{{hotel.description}}</div>
+                <div class="map">
+                    <el-collapse v-if="hotel.location !== '' && details" v-model="activeMap" @change="handleChange">
+
+                        <el-collapse-item title="Map" name="1">
+                            <GmapMap
+                            :center="{lat: +hotel.location.split(',')[0], lng: +hotel.location.split(',')[1]}"
+                            :zoom="7"
+                            map-type-id="terrain"
+                            style="width: 500px; height: 300px"
+                            >
+                                <GmapMarker
+                                    :key="index"
+                                    :position="{lat: +hotel.location.split(',')[0], lng: +hotel.location.split(',')[1]}"
+                                    :clickable="true"
+                                    :draggable="true"
+                                    @click="center={lat: +hotel.location.split(',')[0], lng: +hotel.location.split(',')[1]}"
+                                />
+                            </GmapMap>
+                        </el-collapse-item>
+                    </el-collapse>
+                </div>
                 <div class="price"><h1>{{currency}}{{hotel.price}}</h1></div>
                 <div class="footer">
                     <h4>{{formatDate()}}</h4>
@@ -21,7 +43,7 @@
                 </div>
             </div>
         </div>
-        <el-collapse v-if="hotel.reviews.length !== 0" v-model="activeNames" @change="handleChange">
+        <el-collapse v-if="hotel.reviews.length !== 0" v-model="activeReviews" @change="handleChange">
             <el-collapse-item title="Reviews" name="1">
                 <HotelReviews :reviews="hotel.reviews"></HotelReviews>
             </el-collapse-item>
@@ -31,17 +53,17 @@
 
 <script>
     import moment from 'moment'
-    import { find } from 'lodash'
     import HotelReviews from './HotelReviews'
 
     export default {
         components: {
             HotelReviews
         },
-        props: ['hotel'],
+        props: ['hotel', 'details'],
         data() {
             return {
-                activeNames: ['1'],
+                activeReviews: ['1'],
+                activeMap: ['0'],
                 showReviews: true,
                 currency: '$'
             }
@@ -52,14 +74,20 @@
             onGetReviews(id) {
                 this.$emit('onGetReviews', id)
             },
-            checkIfFav() {
-                return !!find(this.hotel.user, this.$store.user.user_id)
+            checkIfFavourite(users) {
+                return users.includes(this.$store.state.user.user_id)
             },
             openInNewWin(location) {
-                window.open(location, 'hotel', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0');
+                window.open(location, 'hotel', 'left=20,top=20,width=500,height=600,toolbar=1,resizable=0');
             },
             formatDate() {
                 return moment(this.hotel.date).format('L HH:mm')
+            },
+            setFavourite(id, users) {
+                this.$emit('onSetFavourite', {
+                    hotel_id: id,
+                    is_favorite: !this.checkIfFavourite(users)
+                })
             }
         }
     }
@@ -67,6 +95,10 @@
 
 <style lang="scss" scoped>
     @import '../../assets/styles/helpers';
+
+    .box-card {
+        margin-bottom: 20px;
+    }
 
     .clearfix {
         display: flex;
